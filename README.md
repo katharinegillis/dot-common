@@ -1,5 +1,5 @@
 # katharinegillis/common
-Just a bunch of dotfiles.
+Provides common functions for my other ellipsis.sh packages.
 
 ## Install
 Clone and symlink or install with [ellipsis][ellipsis]:
