@@ -67,3 +67,20 @@ function common_uninstall() {
         exit 1
     fi
 }
+
+function common_hard_dependencies_check() {
+    for program in $1; do
+        if ! command -v "$program" &> /dev/null; then
+            echo -e "\e[31mHard dependency on \e[0m$program\e[31m, missing. Please install \e[0m$program\e[31m before attempting this package installation again.\e[0m"
+            exit 1
+        fi
+    done
+}
+
+function common_soft_dependencies_check() {
+    for program in $1; do
+        if ! command -v "$program" &> /dev/null; then
+            echo -e "\e[33mSoft dependency on \e[0m$program\e[33m, missing. Some functionality may not work as expected.\e[0m"
+        fi
+    done
+}
