@@ -10,6 +10,8 @@ function common_system() {
     fi
 }
 
+SYSTEM=$(common_system)
+
 function common_link() {
     if [ -d "$PKG_PATH/files" ]; then
         fs.link_files "$PKG_PATH/files"
@@ -22,7 +24,7 @@ function common_link() {
 
 function common_install() {
     if [ -f "$PKG_PATH/install.sh" ]; then
-        bash "$PKG_PATH/install.sh" "$ELLIPSIS_SRC" "$PKG_PATH"
+        bash "$PKG_PATH/install.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM"
     fi
 
     if [ -f ".restart.lock" ]; then
@@ -44,7 +46,7 @@ function common_pull() {
     pkg.link
 
     if [ -f "$PKG_PATH/update.sh" ]; then
-        bash "$PKG_PATH/update.sh" "$ELLIPSIS_SRC" "$PKG_PATH"
+        bash "$PKG_PATH/update.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM"
     fi
 
     if [ -f ".restart.lock" ]; then
@@ -57,7 +59,7 @@ function common_pull() {
 
 function common_uninstall() {
     if [ -f "$PKG_PATH/uninstall.sh" ]; then
-        bash "$PKG_PATH/uninstall.sh" "$ELLIPSIS_SRC" "$PKG_PATH"
+        bash "$PKG_PATH/uninstall.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM"
     fi
 
     if [ -f ".restart.lock" ]; then
