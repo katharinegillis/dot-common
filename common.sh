@@ -33,15 +33,11 @@ function common_install() {
         rm -rf .restart.lock
         exit 1
     fi
+
+    echo "$PKG_PATH" >> "$HOME/ellipsis_installed.log"
 }
 
-function common_pull() {
-    # Unlink old files
-    hooks.unlink
-
-    # Pull package changes
-    git.pull
-
+function common_update() {
     # Link new files
     pkg.link
 
@@ -54,6 +50,26 @@ function common_pull() {
         echo -e "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the update.\e[0m"
         rm -rf .restart.lock
         exit 1
+    fi
+
+    echo "$PKG_PATH" >> "$HOME/ellipsis_updated.log"
+}
+
+function common_pull() {
+    PACKAGE_HAS_UPDATES=0
+    # Check for updates on git
+    git remote update 2>&1 > /dev/null
+    if git.is_behind; then
+        # Unlink files
+        hooks.unlink
+
+        # Pull down the updates
+        git.pull
+
+        PACKAGE_HAS_UPDATES=1
+    else
+        echo "No updates to download."
+        echo "$PKG_PATH" >> "$HOME/ellipsis_unchanged.log"
     fi
 }
 
@@ -68,21 +84,44 @@ function common_uninstall() {
         rm -rf .restart.lock
         exit 1
     fi
+
+    echo "$PKG_PATH" >> "$HOME/ellipsis_uninstalled.log"
 }
 
 function common_hard_dependencies_check() {
-    for program in $1; do
-        if ! command -v "$program" &> /dev/null; then
-            echo -e "\e[31mHard dependency on \e[0m$program\e[31m, missing. Please install \e[0m$program\e[31m before attempting this package installation again.\e[0m"
-            exit 1
-        fi
-    done
+    package=$1
+    if [ -f "$PKG_PATH/hardDependencies.txt" ]; then
+        mapfile -t hardDependencies < "$PKG_PATH/hardDependencies.txt"
+
+        for program in ${hardDependencies[*]}; do
+            if ! command -v "$program" &> /dev/null; then
+                echo -e "\e[31mPackage \e[0m$package\e[31m has a hard dependency on \e[0m$program\e[31m which is missing. Please install \e[0m$program\e[31m before attempting this package installation again.\e[0m"
+                printf "\e[31mPackage \e[0m%s\e[31m has a hard dependency on \e[0m%s\e[31m which is missing. Please install \e[0m%s\e[31m before attempting this package installation again.\e[0m\n" "$package" "$program" "$program" >> "$HOME/ellipsis_errors.log"
+                MISSING_HARD_DEPENDENCIES=1
+            fi
+        done
+    fi
+
+    if [ "$MISSING_HARD_DEPENDENCIES" == "1" ]; then
+        echo "$PKG_PATH" >> "$HOME/ellipsis_errored.log"
+    fi
 }
 
 function common_soft_dependencies_check() {
-    for program in $1; do
-        if ! command -v "$program" &> /dev/null; then
-            echo -e "\e[33mSoft dependency on \e[0m$program\e[33m, missing. Some functionality may not work as expected.\e[0m"
-        fi
-    done
+    package=$1
+    if [ -f "$PKG_PATH/softDependencies.txt" ]; then
+        mapfile -t softDependencies < "$PKG_PATH/softDependencies.txt"
+
+        for program in ${softDependencies[*]}; do
+            if ! command -v "$program" &> /dev/null; then
+                echo -e "\e[33mPackage \e[0m$package\e[33m has a soft dependency on \e[0m$program\e[33m which is missing. Some functionality may not work as expected.\e[0m"
+                printf "\e[33mPackage \e[0m%s\e[33m has a soft dependency on \e[0m%s\e[33m which is missing. Some functionality may not work as expected.\e[0m\n" "$package" "$program" >> "$HOME/ellipsis_warnings.log"
+                MISSING_SOFT_DEPENDENCIES=1
+            fi
+        done
+    fi
+
+    if [ "$MISSING_SOFT_DEPENDENCIES" == "1" ]; then
+        echo "$PKG_PATH" >> "$HOME/ellipsis_warned.log"
+    fi
 }
