@@ -2,6 +2,11 @@
 
 source "$PKG_PATH/../common/common.sh"
 
+if [ "$SYSTEM" == "unknown" ]; then
+    echo "Unknown operating system. Exiting."
+    exit 1
+fi
+
 ELLIPSIS_PACKAGE=$(pkg.name_from_path "$PKG_PATH")
 
 MISSING_HARD_DEPENDENCIES=0

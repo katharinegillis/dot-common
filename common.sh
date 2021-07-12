@@ -3,10 +3,16 @@
 function common_system() {
     KERNEL_VERSION=$(cat /proc/version)
 
-    if [[ "$KERNEL_VERSION" == *"microsoft"* ]]; then
-        echo "wsl"
+    if [ "$OSTYPE" == "linux-gnu" ]; then
+        if [[ "$KERNEL_VERSION" == *"microsoft"* ]]; then
+            echo "wsl"
+        else
+            echo "linux"
+        fi
+    elif [ "$OSTYPE" == "darwin" ]; then
+        echo "mac"
     else
-        echo "linux"
+        echo "unknown"
     fi
 }
 

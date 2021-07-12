@@ -2,6 +2,12 @@
 
 source "$PKG_PATH/../common/common.sh"
 
+if [ "$SYSTEM" == "unknown" ]; then
+    echo "Unknown operating system. Exiting."
+    touch "$HOME/.ellipsis-unknown-system"
+    exit 1
+fi
+
 pkg.install() {
     echo "$PKG_PATH" >> "$HOME/ellipsis_installed.log"
 }
