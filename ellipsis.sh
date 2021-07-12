@@ -12,12 +12,9 @@ pkg.pull() {
     if git.is_behind; then
         # Pull down the updates
         git.pull
-
-        echo "$PKG_PATH" >> "$HOME/ellipsis_updated.log"
-    else
-        echo "No updates to download."
-        echo "$PKG_PATH" >> "$HOME/ellipsis_unchanged.log"
     fi
+
+    echo "$PKG_PATH" >> "$HOME/ellipsis_updated.log"
 }
 
 pkg.uninstall() {

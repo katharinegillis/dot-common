@@ -30,6 +30,8 @@ pkg.pull() {
     common_pull
     if [ "$MISSING_HARD_DEPENDENCIES" == "0" ]; then
         if [ "$PACKAGE_HAS_UPDATES" == "1" ]; then
+            common_update_and_link
+        else
             common_update
         fi
     else

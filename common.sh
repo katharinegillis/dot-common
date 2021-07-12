@@ -38,6 +38,19 @@ function common_install() {
 }
 
 function common_update() {
+    if [ -f "$PKG_PATH/update.sh" ]; then
+        bash "$PKG_PATH/update.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM"
+    fi
+
+    if [ -f ".restart.lock" ]; then
+        echo ""
+        echo -e "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the update.\e[0m"
+        rm -rf .restart.lock
+        exit 1
+    fi
+}
+
+function common_update_and_link() {
     # Link new files
     pkg.link
 
@@ -51,8 +64,6 @@ function common_update() {
         rm -rf .restart.lock
         exit 1
     fi
-
-    echo "$PKG_PATH" >> "$HOME/ellipsis_updated.log"
 }
 
 function common_pull() {
@@ -67,10 +78,9 @@ function common_pull() {
         git.pull
 
         PACKAGE_HAS_UPDATES=1
-    else
-        echo "No updates to download."
-        echo "$PKG_PATH" >> "$HOME/ellipsis_unchanged.log"
     fi
+
+    echo "$PKG_PATH" >> "$HOME/ellipsis_updated.log"
 }
 
 function common_uninstall() {
