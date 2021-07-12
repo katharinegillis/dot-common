@@ -18,9 +18,9 @@ function common_system() {
 
 SYSTEM=$(common_system)
 
-function common_mode() {
+function common_set_mode() {
     MODE="home"
-    if [ -f "$HOME/.ellipsis-desktop-mode" ]; then
+    if [ ! -f "$HOME/.ellipsis-desktop-mode" ]; then
         echo "Install home dotfiles or work dotfiles? [home/work]: "
         read var
         if [ "$var" != "home" ] && [ "$var" != "work" ]; then
@@ -29,15 +29,16 @@ function common_mode() {
         fi
 
         echo "$var" > "$HOME/.ellipsis-desktop-mode"
-        MODE="$var"
-    else
-        MODE=$(cat "$HOME/.ellipsis-desktop-mode")
     fi
-
-    echo "$MODE"
 }
 
-MODE=$(common_mode)
+function common_get_mode() {
+    cat "$HOME/.ellipsis-desktop-mode"
+}
+
+common_set_mode
+
+MODE=$(common_get_mode)
 
 function common_link() {
     if [ -d "$PKG_PATH/files" ]; then
