@@ -18,6 +18,27 @@ function common_system() {
 
 SYSTEM=$(common_system)
 
+function common_mode() {
+    MODE="home"
+    if [ -f "$HOME/.ellipsis-desktop-mode" ]; then
+        echo "Install home dotfiles or work dotfiles? [home/work]: "
+        read var
+        if [ "$var" != "home" ] && [ "$var" != "work" ]; then
+            echo "Invalid selection - please enter home or work on your next attempt. Exiting."
+            exit 1
+        fi
+
+        echo "$var" > "$HOME/.ellipsis-desktop-mode"
+        MODE="$var"
+    else
+        MODE=$(cat "$HOME/.ellipsis-desktop-mode")
+    fi
+
+    echo "$MODE"
+}
+
+MODE=$(common_mode)
+
 function common_link() {
     if [ -d "$PKG_PATH/files" ]; then
         fs.link_files "$PKG_PATH/files"
@@ -30,7 +51,7 @@ function common_link() {
 
 function common_install() {
     if [ -f "$PKG_PATH/install.sh" ]; then
-        bash "$PKG_PATH/install.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM"
+        bash "$PKG_PATH/install.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM" "$MODE"
     fi
 
     if [ -f ".restart.lock" ]; then
@@ -45,7 +66,7 @@ function common_install() {
 
 function common_update() {
     if [ -f "$PKG_PATH/update.sh" ]; then
-        bash "$PKG_PATH/update.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM"
+        bash "$PKG_PATH/update.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM" "$MODE"
     fi
 
     if [ -f ".restart.lock" ]; then
@@ -61,7 +82,7 @@ function common_update_and_link() {
     pkg.link
 
     if [ -f "$PKG_PATH/update.sh" ]; then
-        bash "$PKG_PATH/update.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM"
+        bash "$PKG_PATH/update.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM" "$MODE"
     fi
 
     if [ -f ".restart.lock" ]; then
@@ -91,7 +112,7 @@ function common_pull() {
 
 function common_uninstall() {
     if [ -f "$PKG_PATH/uninstall.sh" ]; then
-        bash "$PKG_PATH/uninstall.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM"
+        bash "$PKG_PATH/uninstall.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM" "$MODE"
     fi
 
     if [ -f ".restart.lock" ]; then
