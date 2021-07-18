@@ -48,6 +48,36 @@ function common_link() {
     if [ -d "$PKG_PATH/bin" ]; then
         fs.link_rfiles "$PKG_PATH/bin" "$HOME/bin"
     fi
+
+    if [ "$SYSTEM" == "wsl" ]; then
+        if [ -d "$PKG_PATH/files-wsl" ]; then
+            fs.link_files "$PKG_PATH/files-wsl"
+        fi
+
+        if [ -d "$PKG_PATH/bin-wsl" ]; then
+            fs.link_rfiles "$PKG_PATH/bin-wsl" "$HOME/bin"
+        fi
+    fi
+
+    if [ "$SYSTEM" == "linux" ]; then
+        if [ -d "$PKG_PATH/files-linux" ]; then
+            fs.link_files "$PKG_PATH/files-linux"
+        fi
+
+        if [ -d "$PKG_PATH/bin-linux" ]; then
+            fs.link_rfiles "$PKG_PATH/bin-linux" "$HOME/bin"
+        fi
+    fi
+
+    if [ "$SYSTEM" == "mac" ]; then
+        if [ -d "$PKG_PATH/files-mac" ]; then
+            fs.link_files "$PKG_PATH/files-mac"
+        fi
+
+        if [ -d "$PKG_PATH/bin-mac" ]; then
+            fs.link_rfiles "$PKG_PATH/bin-mac" "$HOME/bin"
+        fi
+    fi
 }
 
 function common_install() {
@@ -80,7 +110,7 @@ function common_update() {
 
 function common_update_and_link() {
     # Link new files
-    pkg.link
+    common_link
 
     if [ -f "$PKG_PATH/update.sh" ]; then
         bash "$PKG_PATH/update.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM" "$MODE"
