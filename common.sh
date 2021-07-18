@@ -46,6 +46,10 @@ function common_link() {
     fi
 
     if [ -d "$PKG_PATH/bin" ]; then
+        echo "linking bin files"
+        if [ ! -d "$HOME/bin" ]; then
+            mkdir "$HOME/bin"
+        fi
         fs.link_rfiles "$PKG_PATH/bin" "$HOME/bin"
     fi
 
@@ -55,6 +59,9 @@ function common_link() {
         fi
 
         if [ -d "$PKG_PATH/bin-wsl" ]; then
+            if [ ! -d "$HOME/bin" ]; then
+                mkdir "$HOME/bin"
+            fi
             fs.link_rfiles "$PKG_PATH/bin-wsl" "$HOME/bin"
         fi
     fi
@@ -65,6 +72,9 @@ function common_link() {
         fi
 
         if [ -d "$PKG_PATH/bin-linux" ]; then
+            if [ ! -d "$HOME/bin" ]; then
+                mkdir "$HOME/bin"
+            fi
             fs.link_rfiles "$PKG_PATH/bin-linux" "$HOME/bin"
         fi
     fi
@@ -75,6 +85,9 @@ function common_link() {
         fi
 
         if [ -d "$PKG_PATH/bin-mac" ]; then
+            if [ ! -d "$HOME/bin" ]; then
+                mkdir "$HOME/bin"
+            fi
             fs.link_rfiles "$PKG_PATH/bin-mac" "$HOME/bin"
         fi
     fi
@@ -142,15 +155,19 @@ function common_pull() {
 }
 
 function common_uninstall() {
-    if [ -f "$PKG_PATH/uninstall.sh" ]; then
-        bash "$PKG_PATH/uninstall.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM" "$MODE"
-    fi
+    echo "Run the uninstall script for $ELLIPSIS_PACKAGE? [y/n]"
+    read -r var
+    if [ "$var" == "y" ]; then
+        if [ -f "$PKG_PATH/uninstall.sh" ]; then
+            bash "$PKG_PATH/uninstall.sh" "$ELLIPSIS_SRC" "$PKG_PATH" "$SYSTEM" "$MODE"
+        fi
 
-    if [ -f ".restart.lock" ]; then
-        echo ""
-        echo -e "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the uninstall.\e[0m"
-        rm -rf .restart.lock
-        exit 1
+        if [ -f ".restart.lock" ]; then
+            echo ""
+            echo -e "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the uninstall.\e[0m"
+            rm -rf .restart.lock
+            exit 1
+        fi
     fi
 
     echo "$PKG_PATH" >> "$HOME/ellipsis_uninstalled.log"
