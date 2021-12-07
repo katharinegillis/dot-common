@@ -9,7 +9,7 @@ function common_system() {
         else
             echo "linux"
         fi
-    elif [ "$OSTYPE" == "darwin" ]; then
+    elif [[ "$OSTYPE" == "darwin"* ]]; then
         echo "mac"
     else
         echo "unknown"
