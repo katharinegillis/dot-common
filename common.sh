@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 function common_system() {
-    KERNEL_VERSION=$(cat /proc/version)
-
     if [ "$OSTYPE" == "linux-gnu" ]; then
+        KERNEL_VERSION=$(cat /proc/version)
         if [[ "$KERNEL_VERSION" == *"microsoft"* ]]; then
             echo "wsl"
         else
@@ -100,7 +99,7 @@ function common_install() {
 
     if [ -f ".restart.lock" ]; then
         echo ""
-        echo -e "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the installation.\e[0m"
+        printf "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the installation.\e[0m\n"
         rm -rf .restart.lock
         exit 1
     fi
@@ -115,7 +114,7 @@ function common_update() {
 
     if [ -f ".restart.lock" ]; then
         echo ""
-        echo -e "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the update.\e[0m"
+        printf "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the update.\e[0m\n"
         rm -rf .restart.lock
         exit 1
     fi
@@ -131,7 +130,7 @@ function common_update_and_link() {
 
     if [ -f ".restart.lock" ]; then
         echo ""
-        echo -e "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the update.\e[0m"
+        printf "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the update.\e[0m\n"
         rm -rf .restart.lock
         exit 1
     fi
@@ -164,7 +163,7 @@ function common_uninstall() {
 
         if [ -f ".restart.lock" ]; then
             echo ""
-            echo -e "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the uninstall.\e[0m"
+            printf "\e[33mPlease restart the computer and then re-run the ellipsis command to continue the uninstall.\e[0m\n"
             rm -rf .restart.lock
             exit 1
         fi
@@ -180,8 +179,8 @@ function common_hard_dependencies_check() {
 
         for program in ${hardDependencies[*]}; do
             if ! command -v "$program" &> /dev/null; then
-                echo -e "\e[31mPackage \e[0m$package\e[31m has a hard dependency on \e[0m$program\e[31m which is missing. Please install \e[0m$program\e[31m before attempting this package installation again.\e[0m"
-                printf "\e[31mPackage \e[0m%s\e[31m has a hard dependency on \e[0m%s\e[31m which is missing. Please install \e[0m%s\e[31m before attempting this package installation again.\e[0m\n" "$package" "$program" "$program" >> "$HOME/ellipsis_errors.log"
+                printf "\e[31mPackage \e[0m$package\e[31m has a hard dependency on \e[0m$program\e[31m which is missing. Please install \e[0m$program\e[31m before attempting this package installation again.\e[0m\n"
+                printf "\e[31mPackage \e[0m%s\e[31m has a hard dependency on \e[0m%s\e[31m which is missing. Please install \e[0m%s\e[31m before attempting this package installation again.\e[0m\n\n" "$package" "$program" "$program" >> "$HOME/ellipsis_errors.log"
                 MISSING_HARD_DEPENDENCIES=1
             fi
         done
@@ -199,8 +198,8 @@ function common_soft_dependencies_check() {
 
         for program in ${softDependencies[*]}; do
             if ! command -v "$program" &> /dev/null; then
-                echo -e "\e[33mPackage \e[0m$package\e[33m has a soft dependency on \e[0m$program\e[33m which is missing. Some functionality may not work as expected.\e[0m"
-                printf "\e[33mPackage \e[0m%s\e[33m has a soft dependency on \e[0m%s\e[33m which is missing. Some functionality may not work as expected.\e[0m\n" "$package" "$program" >> "$HOME/ellipsis_warnings.log"
+                printf "\e[33mPackage \e[0m$package\e[33m has a soft dependency on \e[0m$program\e[33m which is missing. Some functionality may not work as expected.\e[0m\n"
+                printf "\e[33mPackage \e[0m%s\e[33m has a soft dependency on \e[0m%s\e[33m which is missing. Some functionality may not work as expected.\e[0m\n\n" "$package" "$program" >> "$HOME/ellipsis_warnings.log"
                 MISSING_SOFT_DEPENDENCIES=1
             fi
         done
